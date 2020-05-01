@@ -3,6 +3,9 @@
 --------------------
 
 - [1. 개발환경 구축](#개발환경-구축?)
+    - [1. 클라이언트 환경 구축](#클라이언트-환경-구축)
+    - [2. 서버 환경 구축](#서버-환경-구축)
+- [2. 참고한 사이트](#참고한-사이트)
 
 # 개발환경 구축
 
@@ -13,7 +16,7 @@ mkdir client
 
 cd client
 
-create-react-app app
+create-react-app ./
 
 npm install --save react-router socket.io-client react-scroll-to-bottom react-emoji query-string react-router-dom
 ~~~
@@ -23,7 +26,7 @@ npm install --save react-router socket.io-client react-scroll-to-bottom react-em
 
 그후 기본적인 js 생성합니다.
 
-> client/app/src/index.js
+> client/src/index.js
 
 ~~~
 import React from "react";
@@ -34,7 +37,7 @@ import App from "./App";
 ReactDOM.render(<App />, document.querySelector("#root"));
 ~~~
 
-> client/app/src/App.js
+> client/src/App.js
 
 ~~~
 import React from "react";
@@ -120,84 +123,8 @@ module.exports = router;
 
 localhost:5000 주소로 접속 후 텍스트가 출력된다면 정상 연결 된것입니다.
 
-# Join&Chat Component 생성
+# 참고한 사이트
 
-> client/app/src/components/Chat/Chat.js
+[JavaScript-Mastery] - https://www.youtube.com/watch?v=ZwFA3YMfkoc
 
-~~~
-import React from "react";
-
-const Chat = () => {
-    return (
-        <h1>Chat</h1>
-    );
-}
-
-export default Chat;
-~~~
-
-> client/app/src/components/Join/Join.js
-
-~~~
-import React from "react";
-
-const Join = () => {
-    return (
-        <h1>Join</h1>
-    );
-}
-
-export default Join;
-~~~
-
-# Server SocketIO 연결
-
-> server/index.js
-
-~~~
-...
-io.on("connection", (socket) => {
-    console.log("We have a new connection.");
-
-    socket.on("disconnect", () => {
-        console.log("User had left.");
-    });
-});
-...
-~~~
-
-채팅 접근 컴포넌트를 생성합니다.
-
-> client/app/src/components/Join/Join.js
-
-~~~
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-import "./Join.css";
-
-const Join = () => {
-    const [name, setName] = useState('');
-    const [room, setRoom] = useState('');
-
-    return (
-        <div className="joinOuterContainer">
-            <div className="joinInnerContainer">
-                <h1 className="heading">Join</h1>
-                <div><input placeholder="Name" className="joinInput" type="text" onChange={(event) => setName(event.target.value)} /></div>
-                <div><input placeholder="Room" className="joinInput mt-20" type="text" onChange={(event) => setRoom(event.target.value)} /></div>
-                <Link
-                    // 채팅 방의 정보가 존재여부를 체크합니다. 
-                    onClick={event => (!name || !room) ? event.preventDefault() : null}
-                    to={`/chat?name=${name}&room=${room}`}
-                >
-                    <button className="botton mt-20" type="submit">Sing In</button>
-                </Link>
-            </div>
-        </div>
-    );
-}
-
-export default Join;
-~~~
-
+[ZeroCho-TV] - https://www.zerocho.com/category/NodeJS/post/57edfcf481d46f0015d3f0cd
