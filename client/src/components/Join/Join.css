@@ -48,6 +48,8 @@ html, body {
       display: inline-block;
       border: none;
       width: 100%;
+      font-size: 18px;
+      cursor: pointer;
   }
   
   .mt-20 {

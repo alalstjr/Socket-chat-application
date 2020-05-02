@@ -123,8 +123,22 @@ module.exports = router;
 
 localhost:5000 주소로 접속 후 텍스트가 출력된다면 정상 연결 된것입니다.
 
+## PostgreSQL
+
+~~~
+npm install cassandra-driver
+npm install pg-promise
+~~~
+
+http://vitaly-t.github.io/pg-promise/global.html#event:connect
+
+
 # 참고한 사이트
 
 [JavaScript-Mastery] - https://www.youtube.com/watch?v=ZwFA3YMfkoc
 
 [ZeroCho-TV] - https://www.zerocho.com/category/NodeJS/post/57edfcf481d46f0015d3f0cd
+
+# 단축키
+
+command + 클릭 하면 해당 메소드로 이동

@@ -7,15 +7,18 @@ const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
 const PORT = process.env.PORT || 5000
 
-const router = require("./router");
-
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-app.use(cors());
-app.use(router);
+const db = require("./db");
 
+app.use(cors());
+
+// Routers
+const accountRouter = require("./routers/AccountRouter");
+
+// Socket.io
 io.on("connection", (socket) => {
     console.log("socket.io 연결되었습니다.");
 
@@ -23,7 +26,7 @@ io.on("connection", (socket) => {
     // emit 한 join 값을 사용하거나 콜백으로도 사용가능
     socket.on("join", ({ name, room }, callback) => {
         const { error, user } = addUser(
-            { 
+            {
                 id: socket.id,
                 name,
                 room
@@ -31,7 +34,7 @@ io.on("connection", (socket) => {
         );
 
         // error 처리
-        if(error) return callback(error);
+        if (error) return callback(error);
 
         // room 접근 검증이 통과되었다면 실행되는 메소드
         // 처음 방에 접근했을 때 사용자에게 보여지는 초기 메세지 설정
@@ -49,7 +52,7 @@ io.on("connection", (socket) => {
 
         // 이전에 저장된 채팅목록을 가져와서 client 전달하도록 하는 메소드
         io.to(user.room).emit('roomData', {
-            room: user.room, 
+            room: user.room,
             users: getUsersInRoom(user.room)
         });
 
@@ -60,10 +63,12 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", (message, callback) => {
         const user = getUser(socket.id);
 
-        io.to(user.room).emit("message",{
+        io.to(user.room).emit("message", {
             user: user.name,
             text: message
         });
+
+        db.any(`INSERT INTO message (name, message) values ('${user.name}', '${message}');`)
 
         callback();
     });
@@ -71,15 +76,13 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("socket.io 연결이 해제되었습니다.");
 
-        const user = removeUser(socket.id); 
+        const user = removeUser(socket.id);
 
-        if(user) {
-          io.to(user.room).emit('message', { user: 'Admin', text: `${user.name}님이 채팅방에서 나갔습니다.` });
-          io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
+        if (user) {
+            io.to(user.room).emit('message', { user: 'Admin', text: `${user.name}님이 채팅방에서 나갔습니다.` });
+            io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
         }
     });
-}); 
-
-app.use(router);
+});
 
 server.listen(PORT, () => console.log(`Server has started on port ${PORT}`));
